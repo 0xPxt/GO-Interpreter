@@ -143,7 +143,7 @@ func (lexer *Lexer) skipWhitespace() {
 }
 
 func (lexer *Lexer) lookAhead() byte {
-	if lexer.readPosition > len(lexer.input) { 
+	if lexer.readPosition >= len(lexer.input) { 
 		return 0
 	}
 
