@@ -11,7 +11,7 @@ type Lexer struct {
 	ch 				byte
 }
 
-var keywords = map[string]token.TokenType { 
+var keywords = map[string]token.TokenType {
 	"ILLEGAL" 	: token.ILLEGAL,
 	"EOF" 		: token.EOF,
 	"IDENT" 	: token.IDENT,
@@ -34,7 +34,7 @@ var keywords = map[string]token.TokenType {
 	"/"  		: token.SLASH,
 	"<"  		: token.LT,
 	">" 		: token.GT,
-} 
+}
 
 
 // Create instance of Lexer structure and return a pointer to it
@@ -118,7 +118,7 @@ func (lexer *Lexer) readIdentifier() string {
 	return lexer.input[position:lexer.position]
 }
 
-func isLetter(ch byte) bool { 
+func isLetter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
 }
 
@@ -132,18 +132,18 @@ func (lexer *Lexer) readNumber() string {
 	return lexer.input[position:lexer.position]
 }
 
-func isDigit(ch byte) bool { 
+func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
 }
 
 func (lexer *Lexer) skipWhitespace() {
 	for lexer.ch == ' ' || lexer.ch == '\t' || lexer.ch == '\n' || lexer.ch == '\r' {
-		lexer.readChar() 
+		lexer.readChar()
 	}
 }
 
 func (lexer *Lexer) lookAhead() byte {
-	if lexer.readPosition >= len(lexer.input) { 
+	if lexer.readPosition >= len(lexer.input) {
 		return 0
 	}
 

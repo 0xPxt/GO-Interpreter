@@ -28,31 +28,31 @@ const (
 	RBRACE 		= "}"
 
 	ASSIGN   	= "="
-	PLUS     	= "+" 
-	MINUS    	= "-" 
-	BANG     	= "!" 
+	PLUS     	= "+"
+	MINUS    	= "-"
+	BANG     	= "!"
 
 	EQUALS 		= "=="
 	NOT_EQUALS 	= "!="
 
-	ASTERISK 	= "*" 
-	SLASH    	= "/" 
-	LT 			= "<" 
+	ASTERISK 	= "*"
+	SLASH    	= "/"
+	LT 			= "<"
 	GT 			= ">"
 
 	FUNCTION = "FUNCTION"
-	LET      = "LET" 
+	LET      = "LET"
 
 	TRUE     = "TRUE"
-	FALSE    = "FALSE" 
+	FALSE    = "FALSE"
 
-	IF       = "IF" 
-	ELSE     = "ELSE" 
+	IF       = "IF"
+	ELSE     = "ELSE"
 
 	RETURN   = "RETURN"
 )
 
-var keywords = map[string]TokenType { 
+var keywords = map[string]TokenType {
 	"fn":     FUNCTION,
 	"let":    LET,
 	"true":   TRUE,
@@ -62,9 +62,9 @@ var keywords = map[string]TokenType {
 	"return": RETURN,
 }
 
-func LookupIdent(ident string) TokenType { 
+func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {
-		return tok 
-	} 
+		return tok
+	}
 	return IDENT
 }
