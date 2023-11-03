@@ -72,7 +72,7 @@ func (letSt *LetStatement)TokenLiteral() string {
 	return letSt.Token.Literal
 }
 
-func (letSt *LetStatement)StatementNode() {
+func (letSt *LetStatement)String() {
 	var buff bytes.Buffer
 
 	buff.WriteString(letSt.TokenLiteral() + " ")
