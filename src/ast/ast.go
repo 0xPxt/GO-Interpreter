@@ -30,6 +30,11 @@ type Identifier struct {
 	Value string
 }
 
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
 type LetStatement struct {
 	Token token.Token
 	Name *Identifier
@@ -72,7 +77,7 @@ func (letSt *LetStatement)TokenLiteral() string {
 	return letSt.Token.Literal
 }
 
-func (letSt *LetStatement)String() {
+func (letSt *LetStatement)String() string {
 	var buff bytes.Buffer
 
 	buff.WriteString(letSt.TokenLiteral() + " ")
@@ -98,6 +103,18 @@ func (id *Identifier)TokenLiteral() string {
 
 func (id *Identifier)String() string {
 	return id.Value
+}
+
+func (intL *IntegerLiteral)ExpressionNode() {
+
+}
+
+func (intL *IntegerLiteral)TokenLiteral() string {
+	return intL.Token.Literal
+}
+
+func (intL *IntegerLiteral)String() string {
+	return intL.Token.Literal
 }
 
 func (retSt *ReturnStatement)StatementNode() {

@@ -5,13 +5,42 @@ import(
 	"source/ast"
 	"source/lexer"
 	"source/token"
+	"strconv"
+)
+
+const (
+	_ int = iota
+	LOWEST
+	EQUALS
+	LESSGREATER
+	SUM
+	PRODUCT
+	PREFIX
+	CALL
 )
 
 type Parser struct {
 	lexer *lexer.Lexer
+	errors []string
+
 	currentToken token.Token
 	peekToken token.Token
-	errors []string
+
+	prefixParseMap map[token.TokenType]prefixParseFunc
+	infixParseMap map[token.TokenType]infixParseFunc
+}
+
+type (
+	prefixParseFunc func() ast.Expression
+	infixParseFunc func(ast.Expression) ast.Expression
+)
+
+func (parser *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFunc) {
+	parser.prefixParseMap[tokenType] = fn
+}
+
+func (parser *Parser) registerInfix(tokenType token.TokenType, fn infixParseFunc) {
+	parser.infixParseMap[tokenType] = fn
 }
 
 func New(lexer *lexer.Lexer) *Parser {
@@ -20,6 +49,10 @@ func New(lexer *lexer.Lexer) *Parser {
 	// Read two tokens to set currentToken and peekToken
 	parser.nextToken()
 	parser.nextToken()
+
+	parser.prefixParseMap = make(map[token.TokenType]prefixParseFunc)
+	parser.registerPrefix(token.IDENT, parser.parseIdentifier)
+	parser.registerPrefix(token.INT, parser.parseIntegerLiteral)
 
 	return parser
 }
@@ -53,7 +86,7 @@ func (parser *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return parser.parseReturnStatement()
 	default:
-		return nil
+		return parser.parseExpressionStatement()
 	}
 }
 
@@ -91,6 +124,48 @@ func (parser *Parser) parseReturnStatement() *ast.ReturnStatement {
 	}
 
 	return returnStatement
+}
+
+func (parser *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	statement := &ast.ExpressionStatement{Token: parser.currentToken}
+
+	statement.Expression = parser.parseExpression(LOWEST)
+
+	if parser.isPeekToken(token.SEMICOLON) {
+		parser.nextToken()
+	}
+
+	return statement
+}
+
+func (parser *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := parser.prefixParseMap[parser.currentToken.Type]
+
+	if prefix == nil {
+		return nil
+	}
+
+	leftExp := prefix()
+
+	return leftExp
+}
+
+func (parser *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: parser.currentToken, Value: parser.currentToken.Literal}
+}
+
+func (parser *Parser) parseIntegerLiteral() ast.Expression {
+	intL := &ast.IntegerLiteral{Token: parser.currentToken}
+
+	value, error := strconv.ParseInt(parser.currentToken.Literal, 0 , 64)
+
+	if error != nil {
+		message := fmt.Sprintf("Could not parse %q as integer", parser.currentToken.Literal)
+		parser.errors = append(parser.errors, message)
+		return nil
+	}
+	intL.Value = value
+	return intL
 }
 
 func (parser *Parser) isCurrentToken(tt token.TokenType) bool {
